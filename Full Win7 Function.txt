@@ -1,0 +1,85 @@
+#make backup folder, backup fails without it
+  SetOutPath "C:\Backups\"
+
+  SetOutPath "C:\"
+    file "${PLICDIR}grldr"
+    file "${PLICDIR}grldr.mbr"
+
+  #backup
+    ExecWait '"bcdedit" /export "C:\Backups\BCD Backup"'
+
+  #bcdedit
+    #command = [bcdedit, '/create', '/d', '%s' % self.info.distro.name, '/application', 'bootsector']
+    #id = run_command(command)
+    #id = id[id.index('{'):id.index('}')+1]
+    nsExec::ExecToStack '"bcdedit" /create /d "${WHAT_TO_CALL_ON_BOOT}" /application bootsector'
+    pop $5 #exit code
+    pop $5 #real output
+    push $5
+      call BetweenBrackets
+    pop $5
+
+    #mbr_path = join_path(self.info.target_dir, 'winboot', 'wubildr.mbr')[2:]
+    #run_command([bcdedit, '/set', id, 'device', 'partition=%s' % self.info.target_drive.path])
+    ExecWait  '"bcdedit" /set $5 device "partition=C:"'
+
+    #run_command([bcdedit, '/set', id, 'path', mbr_path])
+    ExecWait  '"bcdedit" /set $5 path \grldr.mbr'
+
+    #run_command([bcdedit, '/displayorder', id, '/addlast'])
+    ExecWait  '"bcdedit" /displayorder $5 /addlast'
+
+    #run_command([bcdedit, '/timeout', '10'])
+    ExecWait  '"bcdedit" /timeout 10'
+
+    #registry.set_value('HKEY_LOCAL_MACHINE', self.info.registry_key,VistaBootDrive',id)
+    WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY_UP_ONE}" "BootID" "$5"
+
+
+    clearerrors
+    ReadRegStr $5 ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY_UP_ONE}" "BootID"
+    #if not id:
+    #log.debug("Could not find bcd id")
+    #log.debug("Removing bcd entry %s" % id)
+
+    iferrors 0 +3
+    messagebox MB_OK "ERROR! Could not write to the registry."
+    goto +3
+
+    strcmp "" $5 0 +2
+    messagebox MB_OK 'ERROR! Could not write value to registry.'
+/*
+WUBI
+    command = [bcdedit, '/create', '/d', '%s' % self.info.distro.name, '/application', 'bootsector']
+    id = run_command(command)
+    id = id[id.index('{'):id.index('}')+1]
+    mbr_path = join_path(self.info.target_dir, 'winboot', 'wubildr.mbr')[2:]
+    run_command([bcdedit, '/set', id, 'device', 'partition=%s' % self.info.target_drive.path])
+    run_command([bcdedit, '/set', id, 'path', mbr_path])
+    run_command([bcdedit, '/displayorder', id, '/addlast'])
+    run_command([bcdedit, '/timeout', '10'])
+    registry.set_value('HKEY_LOCAL_MACHINE', self.info.registry_key,VistaBootDrive',id)
+*/
+
+    /*
+    maybe working...
+    ExecWait 'bcdedit /create {grldr} /d "${WHAT_TO_CALL_ON_BOOT}" /application bootsector'
+    ExecWait 'bcdedit /set {grldr} device boot'
+    ExecWait 'bcdedit /set {grldr} path \grldr.mbr'
+    ExecWait 'bcdedit /displayorder {grldr} /addlast'
+
+    ExecWait 'bcdedit /timeout 5'
+    */
+
+    #ExecWait 'bcdedit /create /d "Start GRUB4DOS" /application bootsector'
+        #MessageBox MB_OK|MB_ICONQUESTION "Debug 2: $0" IDOK
+    #ExecWait 'bcdedit /set $0 device boot'
+    #ExecWait 'bcdedit /set $0 path \grldr.mbr'
+    #ExecWait 'bcdedit /displayorder $0 /addlast'
+
+  #ExecWait 'bcdedit /export $\"C:\BCD Backup$\"'
+  #ExecWait 'bcdedit /create {grldr} /d "${WHAT_TO_CALL_ON_BOOT}"' $0
+#MessageBox MB_OK|MB_ICONQUESTION "Debug 2: $0" IDOK
+  #ExecWait 'bcdedit /set {grldr} device partition=C:'
+  #ExecWait 'bcdedit /set {grldr} path \grldr'
+  #ExecWait 'bcdedit /displayorder {grldr} /addlast'

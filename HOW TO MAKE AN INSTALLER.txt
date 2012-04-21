@@ -1,0 +1,9 @@
+This file will guide you through making your own Puppy Linux Installer.
+
+Open up your .iso, and put the sfs, intrd.gz, vmlinuz and any other needed files (like "zdrv_123.sfs") into this folder.
+
+Next, open up "Settings.nsh" in a text editor, and follow the instructions there. Make sure you save it!
+
+Now open up NSIS (C:\Program Files\NSIS\makensisw.exe), then drag "main.nsi" into the box.
+
+Your installer will then be created, and put into the same folder as main.nsi.
