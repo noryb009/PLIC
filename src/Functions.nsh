@@ -32,23 +32,14 @@ FunctionEnd
 
 #Function UnpackSevenZip
 #SetOutPath "%temp%"
-#File "${PLICDIR}7z.exe"
-#File "${PLICDIR}7z.sfx"
+#File "${SUPPORT}7z.exe"
+#File "${SUPPORT}7z.sfx"
 #FunctionEnd
 
 Function UnzipPuppy
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  
-  File "${PLICDIR}${PUPPY_SFS}"
-  File "${PLICDIR}vmlinuz"
-  File "${PLICDIR}initrd.gz"
-
-
-  SetOutPath "$INSTDIR"
-  SetOverwrite ifnewer
-  call in
-
+  call InstallFiles ; in fileList.nsh, generated from listFiles.bat
 FunctionEnd
 
 Function MakeReadme

@@ -74,13 +74,14 @@ Win9xUN:
   return
 YesConfigsysBackup:
 
-    execwait 'ATTRIB -S -R -H C:\config.sys'
-    execwait 'ATTRIB -S -R -H C:\config.sys.backup'
-      delete "C:\config.sys"
-      CopyFiles "C:\config.sys.backup" "C:\config.sys"
+    setFileAttributes C:\config.sys NORMAL
+    setFileAttributes C:\config.sys.backup NORMAL
+    
+    delete "C:\config.sys"
+    CopyFiles "C:\config.sys.backup" "C:\config.sys"
 
-    execwait 'ATTRIB +S +R +H C:\config.sys'
-    execwait 'ATTRIB +S +R +H C:\config.sys.backup'
+    setFileAttributes C:\config.sys HIDDEN|SYSTEM|READONLY
+    setFileAttributes C:\config.sys.backup HIDDEN|SYSTEM|READONLY
 
     return
 
@@ -94,7 +95,7 @@ WinNTUN:
     Delete "C:\menu.lst"
     Delete "C:\Grub_GUI.gz"
     #remove entry from boot.ini
-    ExecWait 'attrib -h -s -r C:\boot.ini'
+    setFileAttributes C:\boot.ini NORMAL
     ClearErrors
     Push '$\r$\nc:\grldr="${WHAT_TO_CALL_ON_BOOT}"$\r$\n'                #-- line to be found
     Push ""                #-- line to be added
@@ -106,7 +107,7 @@ WinNTUN:
     Push ""                #-- line to be added
     Push "C:\boot.ini"     #-- file to be searched in
     Call un.INIChgLine
-    ExecWait 'attrib +h +s +r C:\boot.ini'
+    setFileAttributes C:\boot.ini HIDDEN|SYSTEM|READONLY
 
     return
 
@@ -148,19 +149,6 @@ Win7UN:
 
     #registry.set_value('HKEY_LOCAL_MACHINE',self.info.registry_key,'VistaBootDrive',"")
     DeleteRegValue ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY_UP_ONE}" "BootID"
-/*
-WUBI
-id = registry.get_value('HKEY_LOCAL_MACHINE',self.info.registry_key,'VistaBootDrive')
-if not id:
-log.debug("Could not find bcd id")
-log.debug("Removing bcd entry %s" % id)
-command = [bcdedit, '/delete', id , '/f']
-run_command(command)
-registry.set_value('HKEY_LOCAL_MACHINE',self.info.registry_key,'VistaBootDrive',"")
-*/
-
-#Might work
-#ExecWait 'bcdedit /delete {grldr}'
 
     return
 

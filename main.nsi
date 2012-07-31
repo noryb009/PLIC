@@ -1,21 +1,29 @@
 ;settings
 !include "Settings.nsh"
 
+; folders and files
+!define SUPPORT "support\"
+!define SRC "src\"
+!define UNINSTALLLOG "Uninstall.log"
+
 ;functions for functions
-!include "InternalFunctions.nsh"
-!include "un_InternalFunctions.nsh"
+!include "${SRC}InternalFunctions.nsh"
+!include "${SRC}un_InternalFunctions.nsh"
 
 ;x64 bit check (needed for GRUB install on vista/7)
 !include "x64.nsh"
 
 ;functions for installing and configuring GRUB
-!include "InstallGrubFunctions.nsh"
-!include "un_UninstallGrubFunctions.nsh"
+!include "${SRC}InstallGrubFunctions.nsh"
+!include "${SRC}un_UninstallGrubFunctions.nsh"
 
 ;functions
-!include "Functions.nsh"
-!include "un_Functions.nsh"
+!include "${SRC}Functions.nsh"
+!include "${SRC}un_Functions.nsh"
 
+;find files to install
+!execute "support\listFiles.bat"
+!include "src\fileList.nsh"
 
 ; MUI 2 compatible ------
 !include "MUI2.nsh"
@@ -23,11 +31,11 @@
 ; MUI Settings
 !define MUI_ABORTWARNING
 ;icons
-!define MUI_ICON "${PLICDIR}Puppy Linux Install.ico"
-!define MUI_UNICON "${PLICDIR}Puppy Linux Uninstall.ico"
+!define MUI_ICON "${SUPPORT}Puppy Linux Install.ico"
+!define MUI_UNICON "${SUPPORT}Puppy Linux Uninstall.ico"
 ;side image
-!define MUI_WELCOMEFINISHPAGE_BITMAP "${PLICDIR}Side Image.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${PLICDIR}Side Image.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${SUPPORT}Side Image.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${SUPPORT}Side Image.bmp"
 
 !define MUI_PAGE_HEADER_TEXT "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 !define MUI_PAGE_HEADER_SUBTEXT ""

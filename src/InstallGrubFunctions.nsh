@@ -45,7 +45,7 @@ FunctionEnd
 
 Function CreateMenuLst
   SetOutPath "C:\"
-  File "${PLICDIR}Grub_GUI.gz"
+  File "${SUPPORT}Grub_GUI.gz"
   
   FileOpen $0 "C:\menu.lst" w ;Opens a Empty File and fills it
   FileWrite $0 'timeout=5$\r$\n'
@@ -75,7 +75,7 @@ FunctionEnd
 
 Function Win9x
 SetOutPath "C:\boot\grub"
-  file "${PLICDIR}grub.exe"
+  file "${SUPPORT}grub.exe"
   IfFileExists "C:\config.sys" NOERRORNoConfigsys
   ERRORNoConfigsys:
       messagebox MB_OK "Error: no config.sys. The software installation will stop now."
@@ -128,12 +128,12 @@ FileClose $R1 ; and close the file
 
 strcmp $R2 "0" 0 YesMenu
 
-  execwait 'attrib -S -R -H C:\config.sys'
+  setFileAttributes C:\config.sys.backup NORMAL
   #backup config.sys
   iffileexists "C:\config.sys.backup" 0 +4
-  execwait 'attrib -S -R -H C:\config.sys.backup'
-  delete "C:\config.sys.backup"
-  sleep 500
+    setFileAttributes C:\config.sys.backup NORMAL
+    delete "C:\config.sys.backup"
+    sleep 500
   CopyFiles "C:\config.sys" "C:\config.sys.backup"
 
   ClearErrors
@@ -163,8 +163,8 @@ strcmp $R2 "0" 0 YesMenu
   CopyFiles temp.ini "C:\config.sys"
   delete "$OUTDIR\temp.ini"
 
-  execwait 'attrib +S +R +H C:\config.sys.backup'
-  execwait 'attrib +S +R +H C:\config.sys'
+  setFileAttributes C:\config.sys.backup HIDDEN|SYSTEM|READONLY
+  setFileAttributes C:\config.sys HIDDEN|SYSTEM|READONLY
   return
 
 YesMenu:
@@ -172,9 +172,9 @@ YesMenu:
 
 
   #backup config.sys
-  iffileexists "C:\config.sys.backup" 0 +4
-  execwait 'attrib -S -R -H C:\config.sys.backup'
-  delete "C:\config.sys.backup"
+  iffileexists "C:\config.sys.backup" 0 +3
+    setFileAttributes C:\config.sys.backup NORMAL
+    delete "C:\config.sys.backup"
   CopyFiles "C:\config.sys" "C:\config.sys.backup"
 
   strcpy $0 "C:\config.sys"    ;file to replace in
@@ -229,20 +229,20 @@ YesMenu:
   FileWrite $R0 "$\r$\n"
   FileClose $R0
 
-  execwait 'attrib +S +R +H C:\config.sys.backup'
-  execwait 'attrib +S +R +H C:\config.sys'
+  setFileAttributes C:\config.sys.backup HIDDEN|SYSTEM|READONLY
+  setFileAttributes C:\config.sys HIDDEN|SYSTEM|READONLY
   return
 
 YesPuppy:
 
   ClearErrors
-  execwait 'attrib -S -R -H C:\config.sys'
+  setFileAttributes C:\config.sys NORMAL
   ReadINIStr $0 "C:\config.sys" "PUPLINUX" "install"
   strcmp $0 "C:\boot\grub\grub.exe" +3 0
   WriteINIStr "C:\config.sys" "PUPLINUX" "install" "C:\boot\grub\grub.exe"
   FlushINI "C:\config.sys"
 
-  execwait 'attrib +S +R +H C:\config.sys'
+  setFileAttributes C:\config.sys HIDDEN|SYSTEM|READONLY
 
   return
 FunctionEnd
@@ -253,14 +253,14 @@ FunctionEnd
 
 Function WinNT
   SetOutPath "C:\"
-    file "${PLICDIR}grldr"
+    file "${SUPPORT}grldr"
   #add to boot.ini
-  ExecWait 'attrib -h -s -r C:\boot.ini'
+  setFileAttributes C:\boot.ini NORMAL
   #backup boot.ini
   IfFileExists "C:\boot.ini.backup" 0 +3
-  ExecWait 'attrib -h -s -r C:\boot.ini.backup'
-  delete "C:\boot.ini.backup"
-    CopyFiles "C:\boot.ini" "C:\boot.ini.backup"
+    setFileAttributes C:\boot.ini.backup NORMAL
+    delete "C:\boot.ini.backup"
+  CopyFiles "C:\boot.ini" "C:\boot.ini.backup"
 
   FileOpen $0 "C:\boot\grub\menu.lst" a
   FileOpen $0 "C:\boot.ini" a
@@ -298,9 +298,9 @@ Function WinNT
   Push "timeout=5"                #-- line to be added
   Push "C:\boot.ini"     #-- file to be searched in
     Call INIChgLine #shorten time out
-
-  ExecWait 'attrib +h +s +r C:\boot.ini'
-  ExecWait 'attrib +h +s +r C:\boot.ini.backup'
+  
+  setFileAttributes C:\boot.ini HIDDEN|SYSTEM|READONLY
+  setFileAttributes C:\boot.ini.backup HIDDEN|SYSTEM|READONLY
 FunctionEnd
 
 
@@ -316,8 +316,8 @@ Function Win7
 
     ;output files
     SetOutPath "C:\"
-    file "${PLICDIR}grldr"
-    file "${PLICDIR}grldr.mbr"
+    file "${SUPPORT}grldr"
+    file "${SUPPORT}grldr.mbr"
     
     ;bcdedit location for 32/64 bit
     strcpy $1 "bcdedit"

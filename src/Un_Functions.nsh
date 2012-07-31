@@ -10,12 +10,9 @@ FunctionEnd
 
 Function un.deleteFiles
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\${PUPPY_SFS}"
   Delete "$INSTDIR\readme.txt"
-  Delete "$INSTDIR\initrd.gz"
-  Delete "$INSTDIR\vmlinuz"
-
-  Call un.uninstall
+  
+  call un.unInstallFiles ; in fileList.nsh, generated from listFiles.bat
 FunctionEnd
 
 Function un.deleteLinks
