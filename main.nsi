@@ -8,7 +8,6 @@
 
 ;functions for functions
 !include "${SRC}InternalFunctions.nsh"
-!include "${SRC}un_InternalFunctions.nsh"
 
 ;x64 bit check (needed for GRUB install on vista/7)
 !include "x64.nsh"
@@ -139,8 +138,8 @@ FunctionEnd
 
 Section Uninstall
 SetShellVarContext all
-
-  call un.checkIfCompatible
+  call un.CheckIfAdmin
+  call un.SeeIfCompatible
 
   call un.deleteFiles
   

@@ -1,21 +1,26 @@
-Function SeeIfCompatible
-;value
-push $R9
+!macro mSeeIfCompatible un
+Function ${un}SeeIfCompatible
+  ;value
+  push $R9
 
-;call
-call findWinVersion
+  ;call
+  call ${un}findWinVersion
   pop $R9
   StrCmp $R9 '9x' +5
   StrCmp $R9 'NT' +4
   StrCmp $R9 '7' +3
-  MessageBox MB_OK|MB_ICONQUESTION "Your windows version is not compatible with this program." IDOK
-  quit
+    MessageBox MB_OK|MB_ICONQUESTION "Your windows version is not compatible with this program." IDOK
+    quit
   
   ;return to before
   pop $R9
 FunctionEnd
+!macroend
+!insertmacro mSeeIfCompatible ""
+!insertmacro mSeeIfCompatible "un."
 
-Function CheckIfAdmin
+!macro mCheckIfAdmin un
+Function ${un}CheckIfAdmin
   ;back up
   push $R9
   ;see if admin
@@ -29,6 +34,9 @@ Function CheckIfAdmin
   ;is admin
   pop $R9
 FunctionEnd
+!macroend
+!insertmacro mCheckIfAdmin ""
+!insertmacro mCheckIfAdmin "un."
 
 #Function UnpackSevenZip
 #SetOutPath "%temp%"

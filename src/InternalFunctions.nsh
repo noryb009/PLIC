@@ -12,8 +12,8 @@ SetOverwrite on
 !define PRODUCT_PUBLISHER "Puppy Linux"
 
 
-
-Function INIChgLine
+!macro mINIChgLine un
+Function ${un}INIChgLine
 
   Exch $0    ;file to replace in
   Exch
@@ -59,10 +59,13 @@ Function INIChgLine
   POP $0
   POP $1
   POP $2
-
 FunctionEnd
+!macroend
+!insertmacro mINIChgLine ""
+!insertmacro mINIChgLine "un."
 
-Function findWinVersion
+!macro mFindWinVersion un
+Function ${un}findWinVersion
 
   Push $R9
   Push $R1
@@ -153,8 +156,12 @@ Function findWinVersion
   Pop $R1
   Exch $R9
 FunctionEnd
+!macroend
+!insertmacro mFindWinVersion ""
+!insertmacro mFindWinVersion "un."
 
-Function Trim
+!macro mTrim un
+Function ${un}Trim
 	Exch $R9 ; Original string
 	Push $R8
 
@@ -184,8 +191,12 @@ Done:
 	Pop $R8
 	Exch $R9
 FunctionEnd
+!macroend
+!insertmacro mTrim ""
+!insertmacro mTrim "un."
 
-Function TrimText
+!macro mTrimText un
+Function ${un}TrimText
  Exch $R9 ; char
  Exch
  Exch $R8 ; length
@@ -222,6 +233,10 @@ Function TrimText
  Pop $R8
  Exch $R9 ; output
 FunctionEnd
+!macroend
+!insertmacro mTrimText ""
+!insertmacro mTrimText "un."
+
 
 Function BetweenBrackets
 	Exch $R9 ; Original string
