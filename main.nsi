@@ -1,104 +1,96 @@
-;settings
+; Settings
 !include "Settings.nsh"
 
-; folders and files
+; Folders and files
 !define SUPPORT "support\"
 !define SRC "src\"
-!define UNINSTALLLOG "Uninstall.log"
+!define LANG "lang\"
 
-;functions for functions
+; Functions for functions
 !include "${SRC}InternalFunctions.nsh"
 
-;x64 bit check (needed for GRUB install on vista/7)
+; x64 bit check (needed for GRUB install on vista/7)
 !include "x64.nsh"
 
-;functions for installing and configuring GRUB
+; Functions for installing and configuring GRUB
 !include "${SRC}InstallGrubFunctions.nsh"
 !include "${SRC}un_UninstallGrubFunctions.nsh"
 
-;functions
+; Functions
 !include "${SRC}Functions.nsh"
 !include "${SRC}un_Functions.nsh"
 
-;find files to install
+; Find files to install
 !execute "support\listFiles.bat"
 !include "src\fileList.nsh"
 
-; MUI 2 compatible ------
-!include "MUI2.nsh"
-
-; MUI Settings
-!define MUI_ABORTWARNING
-;icons
-!define MUI_ICON "${SUPPORT}Puppy Linux Install.ico"
-!define MUI_UNICON "${SUPPORT}Puppy Linux Uninstall.ico"
-;side image
-!define MUI_WELCOMEFINISHPAGE_BITMAP "${SUPPORT}Side Image.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${SUPPORT}Side Image.bmp"
-
-!define MUI_PAGE_HEADER_TEXT "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-!define MUI_PAGE_HEADER_SUBTEXT ""
-
-; Welcome page
-!define MUI_WELCOMEPAGE_TITLE "${PRODUCT_NAME} ${PRODUCT_VERSION} Setup"
-!define MUI_WELCOMEPAGE_TEXT "This wizard will install ${PRODUCT_NAME} ${PRODUCT_VERSION}.$\r$\n$\r$\nPress Install to start the installation."
-!insertmacro MUI_PAGE_WELCOME
-
-; Instfiles page
-!insertmacro MUI_PAGE_INSTFILES
-
-; Finish page
-!define MUI_FINISHPAGE_TITLE "Installation complete!"
-!define MUI_FINISHPAGE_TEXT "${PRODUCT_NAME} ${PRODUCT_VERSION} has installed successfully.$\r$\n$\r$\nTo run ${PRODUCT_NAME} ${PRODUCT_VERSION}, you must reboot and select $\"Start Puppy Linux$\" from the menu."
-;reboot
-!define MUI_FINISHPAGE_TEXT_REBOOT "Would you like to reboot now to run ${PRODUCT_NAME} ${PRODUCT_VERSION}?"
-!define MUI_FINISHPAGE_TEXT_REBOOTNOW "Reboot Now"
-!define MUI_FINISHPAGE_TEXT_REBOOTLATER "Reboot Later"
-!insertmacro MUI_PAGE_FINISH
-
-; Uninstaller pages
-!insertmacro MUI_UNPAGE_INSTFILES
-
-; Language files
-!insertmacro MUI_LANGUAGE "English"
-
-; MUI end ------
-
+; EXE Info
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "${PRODUCT_NAME} ${PRODUCT_VERSION}.exe"
 InstallDir "C:\${INSTALL_DIR}"
 RequestExecutionLevel admin
 
-# for Vista/7
-Section .onInit
-call SeeIfCompatible
-call CheckIfAdmin
-SectionEnd
+; MUI 2
+!include "MUI2.nsh"
+
+; MUI Settings
+!define MUI_ABORTWARNING
+!define MUI_CUSTOMFUNCTION_GUIINIT guiInit
+!define MUI_CUSTOMFUNCTION_UNGUIINIT un.guiInit
+; Icons
+!define MUI_ICON "${SUPPORT}Puppy Linux Install.ico"
+!define MUI_UNICON "${SUPPORT}Puppy Linux Uninstall.ico"
+; Side image
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${SUPPORT}Side Image.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${SUPPORT}Side Image.bmp"
+
+; Welcome page
+!define MUI_WELCOMEPAGE_TITLE "$(welcomeTitle)"
+!define MUI_WELCOMEPAGE_TEXT "$(welcomeText)"
+!insertmacro MUI_PAGE_WELCOME
+; Instfiles page
+!insertmacro MUI_PAGE_INSTFILES
+; Finish page
+!define MUI_FINISHPAGE_TITLE "$(finishTitle)"
+; Reboot
+!define MUI_FINISHPAGE_TEXT_REBOOT "$(rebootQuestion)"
+!define MUI_FINISHPAGE_TEXT_REBOOTNOW "$(rebootNow)"
+!define MUI_FINISHPAGE_TEXT_REBOOTLATER "$(rebootLater)"
+!insertmacro MUI_PAGE_FINISH
+; Uninstall page
+!insertmacro MUI_UNPAGE_INSTFILES
+
+; Language files
+!include "${LANG}lang.nsh"
+!insertmacro MUI_RESERVEFILE_LANGDLL
+
+; Install sections
+
+Function .onInit
+  !insertmacro MUI_LANGDLL_DISPLAY ; Ask user for language
+FunctionEnd
+
+Function guiInit
+  Call SeeIfCompatible ; See if bootloader is supported
+  Call CheckIfAdmin ; make sure the user has admin privileges
+FunctionEnd
 
 Section "MainSection" SEC01
-  ;get settings from user (where and how to install)
+  ; Unzip 7-zip
+  ;Call UnpackSevenZip
 
-
-  ;unzip 7-zip
-  ;call UnpackSevenZip
-
-  ;unzip Puppy Linux from the ISO
-  call UnzipPuppy
+  ; Unzip Puppy Linux from the ISO
+  Call UnzipPuppy
   
-  ;configure GRUB4DOS
-  call InstallGrubAndConfigureMenu
+  ; Configure GRUB4DOS
+  Call InstallGrubAndConfigureMenu
 
-  ;make readme
-  call MakeReadme
+  ; Make readme
+  Call MakeReadme
   
-  ;ask to reboot
+  ; Ask to reboot
   SetRebootFlag true
 SectionEnd
-
-
-
-
-
 
 Section -AdditionalIcons
   SetShellVarContext all
@@ -122,35 +114,36 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
 
-
-
-Function un.onUninstSuccess
-  HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
-FunctionEnd
+; Uninstall sections
 
 Function un.onInit
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
+  !insertmacro MUI_UNGETLANGUAGE
+FunctionEnd
+
+Function un.guiInit
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "$(un_confirm)" IDYES +2
   Abort
 FunctionEnd
 
-
+Function un.onUninstSuccess
+  HideWindow
+  MessageBox MB_ICONINFORMATION|MB_OK "$(un_success)"
+FunctionEnd
 
 Section Uninstall
-SetShellVarContext all
-  call un.CheckIfAdmin
-  call un.SeeIfCompatible
+  SetShellVarContext all
+  Call un.SeeIfCompatible
+  Call un.CheckIfAdmin
 
-  call un.deleteFiles
+  Call un.deleteFiles ; Delete files
+  Call un.deleteGrub ; Delete GRUB4DOS
   
-  call un.deleteGrub
-  
-  MessageBox MB_YESNO "Do you want to delete your save file?" IDNO +4
-    delete "$INSTDIR\*.2fs"
-    delete "$INSTDIR\*.3fs"
+  MessageBox MB_YESNO "$(un_delSaveFile)" IDNO +4
+    Delete "$INSTDIR\*.2fs"
+    Delete "$INSTDIR\*.3fs"
     delete "$INSTDIR\*.4fs"
-  
-  call un.deleteLinks
-  
+
+  Call un.deleteLinks
+
   SetRebootFlag true
 SectionEnd

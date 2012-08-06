@@ -9,7 +9,7 @@ Function ${un}SeeIfCompatible
   StrCmp $R9 '9x' +5
   StrCmp $R9 'NT' +4
   StrCmp $R9 '7' +3
-    MessageBox MB_OK|MB_ICONQUESTION "Your windows version is not compatible with this program." IDOK
+    MessageBox MB_OK|MB_ICONQUESTION "$(notCompatibleWinVer)" IDOK
     quit
   
   ;return to before
@@ -29,7 +29,7 @@ Function ${un}CheckIfAdmin
   strCmp $R9 "Admin" +3
   
   ;not admin
-  messageBox MB_OK "You must be an administrator to use this program."
+  messageBox MB_OK "$(mustBeAdmin)"
   quit
   ;is admin
   pop $R9
@@ -51,13 +51,10 @@ Function UnzipPuppy
 FunctionEnd
 
 Function MakeReadme
-#fill readme.txt
-  FileOpen $0 $INSTDIR\readme.txt w ;Opens a Empty File an fills it
-  FileWrite $0 'To run Puppy Linux, just reboot. When your computer comes back on, you will see a screen asking if you want to run windows, or Puppy Linux.$\r$\n'
-  FileWrite $0 'Press down then enter to select Puppy Linux.$\r$\n$\r$\n'
-
-  FileWrite $0 'To uninstall Puppy Linux, just go to Start > All Programs > ${PRODUCT_NAME} ${PRODUCT_VERSION} > Uninstall.$\r$\n'
-  FileClose $0 ;Closes the filled file
+  ; Fill readme.txt
+  FileOpen $0 $INSTDIR\readme.txt w ; Opens a Empty File an fills it
+  FileWrite $0 "$(readme_ln_1)$(readme_ln_2)$(readme_ln_3)$(readme_ln_4)"
+  FileClose $0 ; Closes the filled file
 FunctionEnd
 
 

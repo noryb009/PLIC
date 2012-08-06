@@ -13,9 +13,9 @@ StrCmp $R0 "" NoDeleteGRUB 0
 ;you have to have 2 entrys, the one is for the current install
 EnumRegKey $R0 ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY_UP_ONE}" "1"
 ;if found, just remove the entry
-StrCmp $R0 "" 0 NoDeleteGRUB
+StrCmp $R0 "$(un_deleteGrub)" 0 NoDeleteGRUB
 ;if not found, ask to delete
-MessageBox MB_YESNO "Do you want to delete GRUB? If you have any other Linux installations using it, click no. Otherwise, click yes. (If in doubt, just click YES)" IDNO NoDeleteGRUB
+MessageBox MB_YESNO "" IDNO NoDeleteGRUB
   call un.findWinVersion
   pop $R9
   strcmp $R9 '9x' Win9xUN
@@ -86,7 +86,7 @@ YesConfigsysBackup:
     return
 
     unERRORNoConfigsys:
-      messagebox MB_OK "The uninstaller could not access config.sys. Please post in the forum."
+      messagebox MB_OK "$(errorFileNotFound_1) config.sys $(errorFileNotFound_2)"
       return
 
   #NT/XP/Server 2003
@@ -125,11 +125,11 @@ Win7UN:
     #log.debug("Could not find bcd id")
     #log.debug("Removing bcd entry %s" % id)
     strcmp "" $5 0 +3
-    messagebox MB_OK 'ERROR! BootID in the registry is set to "".'
+    messagebox MB_OK "$(un_errorNoBootId)"
     return
 
     iferrors 0 +3
-    messagebox MB_OK "ERROR! Could not find the BootID in the registry."
+    messagebox MB_OK "$(un_errorNoBootId)"
     return
 
     ;bcdedit location for 32/64 bit
@@ -170,8 +170,7 @@ bootgrubuninstall:
         Call un.DeleteFromMenuLst #delete entry
       return
 CantFinduninstall:
-#title ${PRODUCT_NAME} ${PRODUCT_VERSION}$\r$\nfind --set-root --ignore-floppies /${INSTALL_DIR}/initrd.gz$\r$\nkernel /${INSTALL_DIR}/vmlinuz psubdir="${INSTALL_DIR}"$\r$\ninitrd /${INSTALL_DIR}/initrd.gz$\r$\nboot$\r$\n
-    messagebox MB_OK 'You must manually delete the entry from menu.lst. Search for "menu.lst", right-click on menu.lst and select Open with > Choose Program > notepad. Now delete "title ${PRODUCT_NAME} ${PRODUCT_VERSION}" and the 4 lines after that (the last line should be "boot").$\r$\nClick OK once you have done that.'
+    messagebox MB_OK "$(errorFileNotFound_1) menu.lst $(errorFileNotFound_2)"
 FunctionEnd
 
 Function un.DeleteFromMenuLst
@@ -197,7 +196,6 @@ Function un.DeleteFromMenuLst
 
   FileOpen $R0 "$0" a
   FileOpen $R1 temp.ini w
-#title ${PRODUCT_NAME} ${PRODUCT_VERSION}$\r$\nfind --set-root --ignore-floppies /${INSTALL_DIR}/initrd.gz$\r$\nkernel /${INSTALL_DIR}/vmlinuz psubdir="${INSTALL_DIR}"$\r$\ninitrd /${INSTALL_DIR}/initrd.gz$\r$\nboot$\r$\n
 readMOD:
     FileRead $R0 $R2
     IfErrors exitMOD
@@ -270,12 +268,9 @@ exitMOD:
   Delete "$0"
   CopyFiles temp.ini "$0"
   Delete "$OUTDIR\temp.ini"
-  goto +5
+  goto +2
 
-  StrCmp $0 "C:\boot\grub\menu.lst" 0 +3
-    messagebox MB_OK 'You must manually delete the entry from menu.lst. Go to My Computer > C drive > boot > grub > menu.lst. Now, right-click on menu.lst and select Open with > Choose Program > notepad. Now delete "title ${PRODUCT_NAME} ${PRODUCT_VERSION}" and the 4 lines after that.$\r$\nClick OK once you have done that.'
-    goto +2
-    messagebox MB_OK 'You must manually delete the entry from menu.lst. Go to My Computer > C drive. Now, right-click on menu.lst and select Open with > Choose Program > notepad. Now delete "title ${PRODUCT_NAME} ${PRODUCT_VERSION}" and the 4 lines after that.$\r$\nClick OK once you have done that.'
+  messagebox MB_OK "$(errorFileNotFound_1) menu.lst $(errorFileNotFound_2)"
 
   POP $R3
   POP $R2

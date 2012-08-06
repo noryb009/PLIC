@@ -19,7 +19,7 @@ bootgrub:
       FileOpen $0 "C:\boot\grub\menu.lst" a
       goto ContWrite
 CantFind:
-    messagebox MB_OK 'GRUB is installed on your computer, but the installer can$\'t find menu.lst. Please manually add the following to it:$\r$\ntitle ${PRODUCT_NAME} ${PRODUCT_VERSION}$\r$\nfind --set-root --ignore-floppies /${INSTALL_DIR}/initrd.gz$\r$\nkernel /${INSTALL_DIR}/vmlinuz psubdir="${INSTALL_DIR}"$\r$\ninitrd /${INSTALL_DIR}/initrd.gz$\r$\nboot$\r$\n$\r$\nAlso change "timeout=0" to "timeout=10"'
+    messagebox MB_OK '$(cantFindMenuLst)$\r$\ntitle ${PRODUCT_NAME} ${PRODUCT_VERSION}$\r$\nfind --set-root --ignore-floppies /${INSTALL_DIR}/initrd.gz$\r$\nkernel /${INSTALL_DIR}/vmlinuz psubdir="${INSTALL_DIR}"$\r$\ninitrd /${INSTALL_DIR}/initrd.gz$\r$\nboot'
       quit
 ContWrite:
     FileSeek $0 0 END
@@ -78,7 +78,7 @@ SetOutPath "C:\boot\grub"
   file "${SUPPORT}grub.exe"
   IfFileExists "C:\config.sys" NOERRORNoConfigsys
   ERRORNoConfigsys:
-      messagebox MB_OK "Error: no config.sys. The software installation will stop now."
+      messagebox MB_OK "$(errorFileNotFound_1) config.sys $(errorFileNotFound_2). $(aborting)"
       quit
   NOERRORNoConfigsys:
 
@@ -304,12 +304,6 @@ Function WinNT
 FunctionEnd
 
 
-
-
-
-
-
-
 Function Win7
   ;make backup folder, backup fails without it
   SetOutPath "C:\Backups\"
@@ -357,11 +351,11 @@ Function Win7
     ReadRegStr $6 ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY_UP_ONE}" "BootID"
     
     iferrors 0 +3
-    messagebox MB_OK "ERROR! Could not write to the registry."
+    messagebox MB_OK "$(errorWriteRegistry)"
     abort
 
     strcmp $5 $6 +3
-    messagebox MB_OK 'ERROR! Could not write value to registry.'
+    messagebox MB_OK "$(errorWriteRegistry)"
     abort
     return
 FunctionEnd
