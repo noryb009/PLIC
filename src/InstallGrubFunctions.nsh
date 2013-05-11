@@ -328,6 +328,7 @@ Function Win7
     ${EndIf}
     ;backup
     nsExec::Exec '"$1" /export "C:\Backups\BCD Backup"'
+    
     ;create entry
     nsExec::ExecToStack '"$1" /create /d "${WHAT_TO_CALL_ON_BOOT}" /application bootsector'
 
@@ -348,6 +349,8 @@ Function Win7
     ;change the timeout to 5, to give the user time to choose
     nsExec::Exec  '"$1" /timeout 5'
     
+	;use the lagacy chooser on win8, this will not do anything to win7
+    nsExec::Exec '"$1" /set {default} bootmenupolicy legacy'
 
     ;save to registry
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY_UP_ONE}" "BootID" "$5"
