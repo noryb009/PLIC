@@ -327,7 +327,7 @@ Function Win7
       strcpy $1 "$WINDIR\Sysnative\bcdedit.exe"
     ${EndIf}
     ;backup
-    ExecWait '"$1" /export "C:\Backups\BCD Backup"'
+    nsExec::Exec '"$1" /export "C:\Backups\BCD Backup"'
     ;create entry
     nsExec::ExecToStack '"$1" /create /d "${WHAT_TO_CALL_ON_BOOT}" /application bootsector'
 
@@ -339,14 +339,14 @@ Function Win7
     pop $5
     
     ;when selected, run C:\grldr.mbr
-    ExecWait  '"$1" /set $5 device "partition=C:"'
-    ExecWait  '"$1" /set $5 path \grldr.mbr'
+    nsExec::Exec  '"$1" /set $5 device "partition=C:"'
+    nsExec::Exec  '"$1" /set $5 path \grldr.mbr'
 
     ;add the entry to the selectable list
-    ExecWait  '"$1" /displayorder $5 /addlast'
+    nsExec::Exec  '"$1" /displayorder $5 /addlast'
 
     ;change the timeout to 5, to give the user time to choose
-    ExecWait  '"$1" /timeout 5'
+    nsExec::Exec  '"$1" /timeout 5'
     
 
     ;save to registry

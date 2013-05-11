@@ -142,7 +142,7 @@ Win7UN:
     
     #command = [bcdedit, '/delete', id , '/f']
     #run_command(command)
-    ExecWait  '"$1" /delete $5'
+    nsExec::Exec  '"$1" /delete $5'
 ;   ${If} ${RunningX64}
 ;     MessageBox MB_OK "running on x64"
 ;   ${EndIf}
