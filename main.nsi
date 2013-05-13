@@ -145,9 +145,10 @@ SetShellVarContext all
   
   call un.deleteGrub
   
-  MessageBox MB_YESNO "Do you want to delete your save file?" IDNO +3
+  MessageBox MB_YESNO "Do you want to delete your save file?" IDNO +4
     delete "$INSTDIR\*.2fs"
     delete "$INSTDIR\*.3fs"
+    delete "$INSTDIR\*.4fs"
   
   call un.deleteLinks
   
