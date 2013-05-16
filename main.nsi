@@ -6,6 +6,9 @@
 !define SRC "src\"
 !define LANG "lang\"
 
+!define MUI_LANGDLL_ALWAYSSHOW
+!define MUI_LANGDLL_ALLLANGUAGES
+
 ; Functions for functions
 !include "${SRC}InternalFunctions.nsh"
 

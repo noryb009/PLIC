@@ -49,7 +49,7 @@
 ;!include "${LANG}Portuguese.nsh"
 ;!include "${LANG}PortugueseBR.nsh"
 ;!include "${LANG}Romanian.nsh"
-;!include "${LANG}Russian.nsh"
+!include "${LANG}Russian.nsh"
 ;!include "${LANG}Serbian.nsh"
 ;!include "${LANG}SerbianLatin.nsh"
 ;!include "${LANG}SimpChinese.nsh"
