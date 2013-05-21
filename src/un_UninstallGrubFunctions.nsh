@@ -13,9 +13,9 @@ StrCmp $R0 "" NoDeleteGRUB 0
 ;you have to have 2 entrys, the one is for the current install
 EnumRegKey $R0 ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY_UP_ONE}" "1"
 ;if found, just remove the entry
-StrCmp $R0 "$(un_deleteGrub)" 0 NoDeleteGRUB
+StrCmp $R0 "" 0 NoDeleteGRUB
 ;if not found, ask to delete
-MessageBox MB_YESNO "" IDNO NoDeleteGRUB
+MessageBox MB_YESNO "$(un_deleteGrub)" IDNO NoDeleteGRUB
   call un.findWinVersion
   pop $R9
   strcmp $R9 '9x' Win9xUN
