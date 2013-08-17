@@ -118,12 +118,10 @@ Win7UN:
     Delete "C:\menu.lst"
     Delete "C:\Grub_GUI.gz"
 
-    #id = registry.get_value('HKEY_LOCAL_MACHINE',self.info.registry_key,'VistaBootDrive')
+    
     clearerrors
     ReadRegStr $5 ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY_UP_ONE}" "BootID"
-    #if not id:
-    #log.debug("Could not find bcd id")
-    #log.debug("Removing bcd entry %s" % id)
+    
     strcmp "" $5 0 +3
     messagebox MB_OK 'ERROR! BootID in the registry is set to "".'
     return
@@ -140,14 +138,9 @@ Win7UN:
       strcpy $1 "$WINDIR\Sysnative\bcdedit.exe"
     ${EndIf}
     
-    #command = [bcdedit, '/delete', id , '/f']
-    #run_command(command)
     nsExec::Exec  '"$1" /delete $5'
-;   ${If} ${RunningX64}
-;     MessageBox MB_OK "running on x64"
-;   ${EndIf}
-
-    #registry.set_value('HKEY_LOCAL_MACHINE',self.info.registry_key,'VistaBootDrive',"")
+    nsExec::Exec '"$1" /set {default} bootmenupolicy standard'
+    
     DeleteRegValue ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY_UP_ONE}" "BootID"
 
     return
