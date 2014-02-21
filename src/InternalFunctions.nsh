@@ -118,6 +118,7 @@ Function ${un}findWinVersion
   StrCmp $R1 '6.0' lbl_winnt_vista
   StrCmp $R1 '6.1' lbl_winnt_7
   StrCmp $R1 '6.2' lbl_winnt_8
+  StrCmp $R1 '6.3' lbl_winnt_8_1
   Goto lbl_error
 
   lbl_winnt_x:
@@ -152,6 +153,11 @@ Function ${un}findWinVersion
 
   lbl_winnt_8:
     #Strcpy $R9 '8'
+    Strcpy $R9 '7'
+  Goto lbl_done
+
+  lbl_winnt_8_1:
+    #Strcpy $R9 '8.1'
     Strcpy $R9 '7'
   Goto lbl_done
 
